@@ -3,19 +3,25 @@ using UnityEngine.SceneManagement;
 using TMPro;
 
 public class TimerController : MonoBehaviour {
-    public bool running = false;
-    public TMP_Text TimerTextObject;
-    private float time;
-    private StateHandler State;
+    public bool running = false; // "global" running state
+    private float time; // current time
 
-    public void Awake() {
+    public TMP_Text TimerTextObject; // reference to timer text
+    private StateHandler State; // reference to Canvas via State
+
+    void Awake() {
 		// find StateHandler in the scene
 		State = GameObject.FindObjectOfType<StateHandler>();
 	}
 
+    public void startTimer() {
+        time = 0; // reset time
+        running = true; // start the timer
+    }
+
     void Update() {
         if (running) {
-            int humanCountInScene = GameObject.FindGameObjectsWithTag("Human").Length;
+            int humanCountInScene = countGameObjectsWithTag("Human");
             bool noHumansInScene = humanCountInScene == 0;
 
             if (noHumansInScene) { // all humans have successfully escaped
@@ -26,11 +32,6 @@ public class TimerController : MonoBehaviour {
             time += Time.deltaTime; // add passed time since last frame to total time
             updateTimer(time); // update timer text
         }
-    }
-
-    public void startTimer() {
-        time = 0; // reset time
-        running = true; // start the timer
     }
 
     private void updateTimer(float time) {
@@ -59,5 +60,9 @@ public class TimerController : MonoBehaviour {
         using(System.IO.StreamWriter logFile = new System.IO.StreamWriter(@"C:\Users\Public\panicLog_" + SceneManager.GetActiveScene().name + ".csv", true)){
             logFile.WriteLine(tau_i + ";" + A_i + ";" + B_i + ";" + lambda_i + ";" + panic + ";" + time);
         }
+    }
+
+    private int countGameObjectsWithTag(string tag) {
+        return GameObject.FindGameObjectsWithTag(tag).Length;
     }
 }
