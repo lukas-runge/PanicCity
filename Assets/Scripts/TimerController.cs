@@ -24,12 +24,12 @@ public class TimerController : MonoBehaviour {
             int humanCountInScene = countGameObjectsWithTag("Human");
             bool noHumansInScene = humanCountInScene == 0;
 
-            if (noHumansInScene) { // all humans have successfully escaped
+            if (noHumansInScene) { // humans have successfully escaped
                 running = false; // stop the timer
                 logRunthru(time); // log time to *.csv file
             }
 
-            time += Time.deltaTime; // add passed time since last frame to total time
+            time += Time.deltaTime; // add passed time
             updateTimer(time); // update timer text
         }
     }
