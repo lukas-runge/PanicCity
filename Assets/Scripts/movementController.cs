@@ -31,7 +31,7 @@ public class movementController : MonoBehaviour {
 			return; // do nothing
 		}
 
-		//get new list of forces from MathProcessor and apply them to rb
+		// get list of forces from MathProcessor & apply them to rb
 		foreach (var force in Math.getForces(gameObject)) {
 			rb.AddForce(force);
 		}
