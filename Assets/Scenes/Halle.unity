@@ -2386,7 +2386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7812dda23eace9f42806c9efcea0077c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableTestSeries: 1
+  enableTestSeries: 0
   testRepetitions: 100
   tau_i: 2.5
   A_i: 10
@@ -3093,8 +3093,8 @@ MonoBehaviour:
   slider3: {fileID: 416825868}
   slider4: {fileID: 1113656241}
   toggle1: {fileID: 688784897}
-  Timer: {fileID: 700153306}
   ButtonTextObject: {fileID: 2034957697}
+  Timer: {fileID: 700153306}
 --- !u!4 &297823173
 Transform:
   m_ObjectHideFlags: 0
@@ -7505,8 +7505,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c30c797455b9645be551713e472db6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimerTextObject: {fileID: 700153304}
   running: 0
+  TimerTextObject: {fileID: 700153304}
 --- !u!1001 &703731767
 PrefabInstance:
   m_ObjectHideFlags: 0

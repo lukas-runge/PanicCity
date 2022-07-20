@@ -137,4 +137,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doorReached: 0
-  desiredSpeed: 0
+  desiredSpeed: 1.3
