@@ -1,72 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof (Rigidbody2D))]
-public class movementController : MonoBehaviour
-{
-    private StateHandler State;
-    private MathProcessor Math;
-    private List<Vector2> forces;
-    private Rigidbody2D rb;
-    public bool doorReached = false;
-    public float desiredSpeed;
-    void Awake() {
-        rb = GetComponent<Rigidbody2D>();
+[RequireComponent(typeof(Rigidbody2D))]
+public class movementController : MonoBehaviour {
+	public bool doorReached = false;
+	public float desiredSpeed = 1.3f; // average speed of humans
 
-        //Find StateHandler in the scene
-        State = GameObject.FindObjectOfType<StateHandler>();
+	private Rigidbody2D rb; // reference to rigidbody
+	private StateHandler State; // reference to StateHandler
+	private MathProcessor Math; // reference to MathProcessor
 
-        //Find MathProcessor in the scene
-        Math = GameObject.FindObjectOfType<MathProcessor>();
+	void Awake() {
+		// find Rigidbody2D on the entity
+		rb = GetComponent<Rigidbody2D>();
 
-        // get Mass of rb
-        rb.mass = rb.mass + Random.Range(-20f, 20f);
+		// find StateHandler in the scene
+		State = GameObject.FindObjectOfType<StateHandler>();
 
-        // randomize desired speed
-        desiredSpeed = Random.Range(0.9f, 1.7f);
-        // desiredSpeed = 1.3f;
-    }
+		// find MathProcessor in the scene
+		Math = GameObject.FindObjectOfType<MathProcessor>();
 
-    // Start is called before the first frame update
-    void Start()
-    {
+		// get mass from rigidbody and randomize it
+		rb.mass = rb.mass + Random.Range(-20f, 20f);
 
-    }
+		// randomize desired speed
+		desiredSpeed = desiredSpeed + Random.Range(-0.4f, 0.4f);
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	void OnTriggerEnter2D(Collider2D col) {
+		if (col.gameObject.tag == "Door") {
+			doorReached = true;
+		}
 
-    void OnTriggerEnter2D(Collider2D col) {
-        if (col.gameObject.tag == "Door") {
-            doorReached = true;
-        }
+		if (col.gameObject.tag == "Sammelplatz") {
+			Destroy(gameObject); // despawn human
+		}
+	}
 
-        if (col.gameObject.tag == "Sammelplatz") {
-            // despawn entity
-            Destroy(gameObject);
-        }
-    }
+	void FixedUpdate() {
+		if (State.runningState == false) { // simulation stopped
+			return; // do nothing
+		}
 
-    void FixedUpdate() {
-        if (State.runningState == false) {
-            return;
-        }        
-        
-        //get new list of forces from MathProcessor
-        forces = Math.getForces(gameObject);
-
-        // // Clear Velocity
-        // rb.velocity = Vector2.zero;
-
-        // Apply Forces
-        foreach (var force in forces)
-        {
-            // add the force to the rigidbody
-            rb.AddForce(force);
-        }
-    }
+		//get new list of forces from MathProcessor and apply them to rb
+		foreach (var force in Math.getForces(gameObject)) {
+			rb.AddForce(force);
+		}
+	}
 }
