@@ -2,10 +2,10 @@ using System.Collections;
 using UnityEngine;
 
 public class TestController : MonoBehaviour {
-	private StateHandler State;
-	private TimerController Timer;
+	private bool testRunning = false; // current running state
+	private int repetitions = 0; // successful repetitions count
 
-	private bool testRunning = false;
+	// inspector configured variables 
 	public bool enableTestSeries = false;
 	public int testRepetitions = 10;
 	public float tau_i = 2.5f;
@@ -13,73 +13,67 @@ public class TestController : MonoBehaviour {
 	public float B_i = 0.5f;
 	public float lambda_i = 0.5f;
 	public bool panic = false;
-	private int repetitions = 0;
-	private float startTime;
-	private static TestController TestControllerInstance;
+
+	private StateHandler State; // reference to StateHandler
+	private TimerController Timer; // reference to TimerController
+
 	public void Awake() {
 		int numTestControllers = FindObjectsOfType<TestController>().Length;
-		if (numTestControllers != 1) {
-			Destroy(this.gameObject);
+		bool TestControllerAlreadyExists = numTestControllers != 1;
+
+		if (TestControllerAlreadyExists) {
+			Destroy(this.gameObject); // destroy self
 		} else {
-			DontDestroyOnLoad(gameObject);
-			if (enableTestSeries) {
-				Debug.Log("Starting test series");
-			}
+			DontDestroyOnLoad(gameObject); // make self persistent
 		}
 	}
 
-	private IEnumerator startSimWithDelay() {
-		//yield on a new YieldInstruction that waits for 5 seconds.
-		yield return new WaitForSeconds(1);
-
-		//Find StateHandler in the scene
-		State = GameObject.FindObjectOfType<StateHandler>();
-
-		//Find TimerController in scene
-		Timer = GameObject.FindObjectOfType<TimerController>();
-		
-		// set Parameters to the current values of the sliders
-		State.slider1.value = tau_i;
-		State.slider2.value = A_i;
-		State.slider3.value = B_i;
-		State.slider4.value = lambda_i;
-		State.toggle1.isOn = panic;
-
-		State.toggleRunning();
-
-		// remember current start time
-		startTime = Time.time;
-
-		testRunning = true;
-		repetitions++;
-		Debug.Log("Starting test " + repetitions);
-	}
-
-	// Start is called before the first frame update
 	void Start() {
 		if (enableTestSeries && repetitions < testRepetitions) {
 			StartCoroutine(startSimWithDelay());
 		}
 	}
 
-	// Update is called once per frame
-	void FixedUpdate() {
+	void Update() {
 		if (testRunning == true) {
-			if (Timer.running == false) {
-				Debug.Log("Test " + repetitions + " finished");
-				testRunning = false;
+			if (Timer.running == false) { // successfull run
 				State.toggleRunning();
-				Start();
+				testRunning = false;
+
+				Start(); // conduct new test if necessary
 			}
 
-			// if more than one minute elaplsed since start, abort test
-			if (Time.time - startTime > 60) {
-				Debug.Log("Test " + repetitions + " aborted");
-				testRunning = false;
+			// abort test if more than 60 seconds have passed
+			if (Timer.passedTime > 60) { // failed simulation run
 				State.toggleRunning();
-				repetitions--;
-				Start();
+				testRunning = false;
+				repetitions--; // dont count this test as it failed
+
+				Start(); // retry test
 			}
 		}
+	}
+
+	private IEnumerator startSimWithDelay() {
+		// wait 1 sec for scene to load
+		yield return new WaitForSeconds(1);
+
+		// find StateHandler in the scene
+		State = GameObject.FindObjectOfType<StateHandler>();
+
+		// find TimerController in scene
+		Timer = GameObject.FindObjectOfType<TimerController>();
+
+		// set parameters to the inspector configured values
+		State.slider1.value = tau_i;
+		State.slider2.value = A_i;
+		State.slider3.value = B_i;
+		State.slider4.value = lambda_i;
+		State.toggle1.isOn = panic;
+
+		// start the simulation
+		State.toggleRunning();
+		testRunning = true;
+		repetitions++;
 	}
 }
