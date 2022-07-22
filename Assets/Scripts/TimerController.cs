@@ -4,7 +4,7 @@ using TMPro;
 
 public class TimerController : MonoBehaviour {
     public bool running = false; // "global" running state
-    private float time; // current time
+    public float passedTime; // current time
 
     public TMP_Text TimerTextObject; // reference to timer text
     private StateHandler State; // reference to Canvas via State
@@ -15,7 +15,7 @@ public class TimerController : MonoBehaviour {
 	}
 
     public void startTimer() {
-        time = 0; // reset time
+        passedTime = 0; // reset time
         running = true; // start the timer
     }
 
@@ -26,11 +26,11 @@ public class TimerController : MonoBehaviour {
 
             if (noHumansInScene) { // humans have successfully escaped
                 running = false; // stop the timer
-                logRunthru(time); // log time to *.csv file
+                logRunthru(passedTime); // log time to *.csv file
             }
 
-            time += Time.deltaTime; // add passed time
-            updateTimer(time); // update timer text
+            passedTime += Time.deltaTime; // add passed time
+            updateTimer(passedTime); // update timer text
         }
     }
 
